@@ -5,7 +5,7 @@ async function PostList() {
   const posts = await getPosts();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 my-6">
       {posts.length === 0 ? (
         <p>No posts found.</p>
       ) : (

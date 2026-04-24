@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { singlePostPath } from "@/path";
+import { editPostPath, singlePostPath } from "@/path";
 import { Post } from "@/features/post/types/post";
-import { MoveUpRight } from "lucide-react";
+import { Edit, MoveUpRight } from "lucide-react";
 import Link from "next/link";
 import { deletePost } from "../actions/delete-post";
 
@@ -34,17 +34,26 @@ function PostItem({ id, title, description, isCard = true }: Props) {
         </CardDescription>
       </CardHeader>
       {isCard && (
-        <CardContent>
-          <Button variant={"outline"} size={"sm"} asChild>
+        <CardContent className="flex items-center gap-2">
+          <Button size={"sm"} asChild>
             <Link href={singlePostPath(id)}>
               Read <MoveUpRight />
+            </Link>
+          </Button>
+          <Button variant={"outline"} size={"sm"} asChild>
+            <Link href={editPostPath(id)}>
+              <Edit /> Edit
             </Link>
           </Button>
         </CardContent>
       )}
       {!isCard && (
         <CardFooter>
-          <Button variant={"destructive"} onClick={deletePostHandler}>
+          <Button
+            variant={"destructive"}
+            size={"sm"}
+            onClick={deletePostHandler}
+          >
             Delete
           </Button>
         </CardFooter>
