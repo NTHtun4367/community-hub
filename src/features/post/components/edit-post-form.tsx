@@ -2,7 +2,6 @@
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Post } from "../types/post";
 import { updatePost } from "../actions/update-post";
 import SubmitButton from "./submit-button";
 import CardWrapper from "./card-wrapper";
@@ -12,6 +11,14 @@ import { useAction } from "next-safe-action/hooks";
 import { postUpdateSchema, postUpdateSchemaType } from "../schemas";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Post } from "@/generated/prisma/client";
 
 interface EditPostFormProps {
   post: Post;
@@ -33,6 +40,7 @@ function EditPostForm({ post }: EditPostFormProps) {
       id: post.id as string,
       title: post.title,
       description: post.description,
+      status: post.status,
     },
   });
 
@@ -70,6 +78,33 @@ function EditPostForm({ post }: EditPostFormProps) {
                 className="min-h-24 resize-none"
                 aria-invalid={fieldState.invalid}
               />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="status"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="status">Status</FieldLabel>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger
+                  id="status"
+                  aria-invalid={fieldState.invalid}
+                  className="w-full"
+                >
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent position="item-aligned">
+                  <SelectItem value="DONE">DONE</SelectItem>
+                  <SelectItem value="IN_PROGRESS">IN PROGRESS</SelectItem>
+                </SelectContent>
+              </Select>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

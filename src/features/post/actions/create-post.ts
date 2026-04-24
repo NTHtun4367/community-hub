@@ -10,15 +10,10 @@ export const createPost = actionClient
   .inputSchema(postCreateSchema)
   .action(async ({ parsedInput: { title, description } }) => {
     try {
-      const data = {
-        title,
-        description,
-      };
-
       await prisma.post.create({
         data: {
-          title: data.title,
-          description: data.description,
+          title,
+          description,
         },
       });
 

@@ -9,19 +9,14 @@ import { postUpdateSchema } from "../schemas";
 
 export const updatePost = actionClient
   .inputSchema(postUpdateSchema)
-  .action(async ({ parsedInput: { id, title, description } }) => {
+  .action(async ({ parsedInput: { id, title, description, status } }) => {
     try {
-      const data = {
-        id,
-        title,
-        description,
-      };
-
       await prisma.post.update({
-        where: { id: data.id },
+        where: { id },
         data: {
-          title: data.title,
-          description: data.description,
+          title,
+          description,
+          status,
         },
       });
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,22 +9,25 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { editPostPath, singlePostPath } from "@/path";
-import { Post } from "@/features/post/types/post";
 import { Edit, MoveUpRight } from "lucide-react";
 import Link from "next/link";
-import { deletePost } from "../actions/delete-post";
+import { Post } from "@/generated/prisma/client";
+import { Badge } from "@/components/ui/badge";
+import DeleteButton from "./delete-button";
 
 interface Props extends Post {
   isCard?: boolean;
 }
 
-function PostItem({ id, title, description, isCard = true }: Props) {
-  const deletePostHandler = async () => {
-    await deletePost(id as string);
-  };
-
+function PostItem({ id, title, description, status, isCard = true }: Props) {
   return (
-    <Card>
+    <Card className="relative">
+      <Badge
+        className="absolute right-4 top-4 z-10"
+        variant={status === "IN_PROGRESS" ? "outline" : "default"}
+      >
+        {status}
+      </Badge>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription className={cn(isCard && "line-clamp-2")}>
@@ -49,13 +50,7 @@ function PostItem({ id, title, description, isCard = true }: Props) {
       )}
       {!isCard && (
         <CardFooter>
-          <Button
-            variant={"destructive"}
-            size={"sm"}
-            onClick={deletePostHandler}
-          >
-            Delete
-          </Button>
+          <DeleteButton id={id} />
         </CardFooter>
       )}
     </Card>
