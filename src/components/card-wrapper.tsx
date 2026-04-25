@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -11,9 +12,15 @@ interface CardWrapperProps {
   title: string;
   description: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-function CardWrapper({ title, description, children }: CardWrapperProps) {
+function CardWrapper({
+  title,
+  description,
+  children,
+  footer,
+}: CardWrapperProps) {
   return (
     <Card>
       <CardHeader>
@@ -21,6 +28,7 @@ function CardWrapper({ title, description, children }: CardWrapperProps) {
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
+      {footer && <CardFooter>{footer}</CardFooter>}
     </Card>
   );
 }

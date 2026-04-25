@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import { signUpSchema, signUpSchemaType } from "../schemas";
 import { signUp } from "../actions/signup";
+import Link from "next/link";
+import { signInPath } from "@/path";
 
 function SignUpForm() {
   const { execute, isPending } = useAction(signUp, {
@@ -36,7 +38,11 @@ function SignUpForm() {
   }
 
   return (
-    <CardWrapper title="Sign Up" description="Create your new account.">
+    <CardWrapper
+      title="Sign Up"
+      description="Create your new account."
+      footer={<Footer />}
+    >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Controller
           name="name"
@@ -113,3 +119,14 @@ function SignUpForm() {
 }
 
 export default SignUpForm;
+
+function Footer() {
+  return (
+    <p className="text-sm text-muted-foreground font-medium">
+      Already have an account?{" "}
+      <Link href={signInPath} className="underline">
+        Sign in
+      </Link>
+    </p>
+  );
+}

@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import { signInSchema, signInSchemaType } from "../schemas";
 import { signIn } from "../actions/signin";
+import Link from "next/link";
+import { resetPasswordPath, signUpPath } from "@/path";
 
 function SignInForm() {
   const { execute, isPending } = useAction(signIn, {
@@ -34,7 +36,11 @@ function SignInForm() {
   }
 
   return (
-    <CardWrapper title="Sign In" description="Sign in to your account.">
+    <CardWrapper
+      title="Sign In"
+      description="Sign in to your account."
+      footer={<Footer />}
+    >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Controller
           name="email"
@@ -76,3 +82,19 @@ function SignInForm() {
 }
 
 export default SignInForm;
+
+function Footer() {
+  return (
+    <div className="w-full flex items-center justify-between text-sm text-muted-foreground font-medium">
+      <p>
+        Don't have an account?{" "}
+        <Link href={signUpPath} className="underline">
+          Sign up
+        </Link>
+      </p>
+      <Link href={resetPasswordPath} className="underline">
+        Forgot password?
+      </Link>
+    </div>
+  );
+}
