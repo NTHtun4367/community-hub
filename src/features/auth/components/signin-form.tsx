@@ -1,77 +1,78 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { createPost } from "@/features/post/actions/create-post";
 import CardWrapper from "../../../components/card-wrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { postCreateSchema, postCreateSchemaType } from "../schemas";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
+import { signInSchema, signInSchemaType } from "../schemas";
+import { signIn } from "../actions/signin";
 
-function CreatePostForm() {
-  const { execute, isPending } = useAction(createPost, {
+function SignInForm() {
+  const { execute, isPending } = useAction(signIn, {
     onSuccess: () => {
-      toast.success("Post created successfully!");
+      toast.success("Sign in successfully!");
     },
     onError: ({ error }) => {
       toast.error(error.serverError || "Something went wrong!");
     },
   });
 
-  const form = useForm<postCreateSchemaType>({
-    resolver: zodResolver(postCreateSchema),
+  const form = useForm<signInSchemaType>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      email: "",
+      password: "",
     },
   });
 
-  function onSubmit(data: postCreateSchemaType) {
+  function onSubmit(data: signInSchemaType) {
     execute(data);
   }
 
   return (
-    <CardWrapper
-      title="Create new post"
-      description="This will be create new post."
-    >
+    <CardWrapper title="Sign In" description="Sign in to your account.">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Controller
-          name="title"
+          name="email"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="title">Title</FieldLabel>
-              <Input {...field} id="title" aria-invalid={fieldState.invalid} />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="description"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
-              <Textarea
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
                 {...field}
-                id="description"
-                rows={6}
-                className="min-h-24 resize-none"
+                id="email"
                 aria-invalid={fieldState.invalid}
+                placeholder="example@gmail.com"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
-        <SubmitButton label="Create" isPending={isPending} />
+        <Controller
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input
+                {...field}
+                id="password"
+                aria-invalid={fieldState.invalid}
+                placeholder="******"
+                type="password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <SubmitButton label="Sign In" isPending={isPending} />
       </form>
     </CardWrapper>
   );
 }
 
-export default CreatePostForm;
+export default SignInForm;

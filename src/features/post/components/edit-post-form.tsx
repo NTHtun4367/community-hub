@@ -3,8 +3,8 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { updatePost } from "../actions/update-post";
-import SubmitButton from "./submit-button";
-import CardWrapper from "./card-wrapper";
+import SubmitButton from "../../../components/submit-button";
+import CardWrapper from "../../../components/card-wrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";

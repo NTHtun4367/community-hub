@@ -1,6 +1,13 @@
-import { Post } from "@/generated/prisma/client";
+import { Post, User } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export const getPosts = async (): Promise<Post[]> => {
-  return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
+export interface PostWithUser extends Post {
+  user: User;
+}
+
+export const getPosts = async (): Promise<PostWithUser[]> => {
+  return prisma.post.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { user: true },
+  });
 };
