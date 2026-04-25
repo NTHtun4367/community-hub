@@ -9,16 +9,19 @@ const FAKE_POSTS = [
     title: "First Post",
     description:
       "Nam tempor finibus lorem, nec varius arcu convallis sed. Nunc id orci a neque vehicula malesuada. Donec vehicula libero vel leo convallis, nec tincidunt felis tincidunt. Maecenas euismod tristique leo, vel malesuada ligula malesuada sed. Donec eget libero id leo congue venenatis.",
+    userId: "vjePvauTWhIBlOpP313rFBINZ3tQNIec",
   },
   {
     title: "Second Post",
     description:
       "Nam tempor finibus lorem, nec varius arcu convallis sed. Nunc id orci a neque vehicula malesuada. Donec vehicula libero vel leo convallis, nec tincidunt felis tincidunt. Maecenas euismod tristique leo, vel malesuada ligula malesuada sed. Donec eget libero id leo congue venenatis.",
+    userId: "vjePvauTWhIBlOpP313rFBINZ3tQNIec",
   },
   {
     title: "Third Post",
     description:
       "Nam tempor finibus lorem, nec varius arcu convallis sed. Nunc id orci a neque vehicula malesuada. Donec vehicula libero vel leo convallis, nec tincidunt felis tincidunt. Maecenas euismod tristique leo, vel malesuada ligula malesuada sed. Donec eget libero id leo congue venenatis.",
+    userId: "vjePvauTWhIBlOpP313rFBINZ3tQNIec",
   },
 ];
 
