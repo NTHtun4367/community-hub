@@ -20,7 +20,8 @@ function ResetPasswordForm() {
       toast.success("Reset password email sent.");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
 

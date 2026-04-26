@@ -27,7 +27,8 @@ export const createPost = actionClient
       });
 
       revalidatePath(postsPath);
-    } catch (error) {
-      throw new Error("Something went wrong!");
+    } catch (error: any) {
+      const errorMessage = error?.body?.message || "Something went wrong!";
+      throw new Error(errorMessage);
     }
   });

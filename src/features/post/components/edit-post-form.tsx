@@ -19,18 +19,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Post } from "@/generated/prisma/client";
+import { useRouter } from "next/navigation";
+import { postsPath } from "@/path";
+import { useEffect } from "react";
 
 interface EditPostFormProps {
   post: Post;
 }
 
 function EditPostForm({ post }: EditPostFormProps) {
-  const { execute, isPending } = useAction(updatePost, {
+  const router = useRouter();
+  const { execute, isPending, hasSucceeded } = useAction(updatePost, {
     onSuccess: () => {
       toast.success("Post updated successfully!");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
 
@@ -47,6 +52,12 @@ function EditPostForm({ post }: EditPostFormProps) {
   function onSubmit(data: postUpdateSchemaType) {
     execute(data);
   }
+
+  useEffect(() => {
+    if (hasSucceeded) {
+      router.push(postsPath);
+    }
+  }, [hasSucceeded]);
 
   return (
     <CardWrapper

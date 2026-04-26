@@ -15,10 +15,12 @@ import SubmitButton from "../../../components/submit-button";
 function CreatePostForm() {
   const { execute, isPending } = useAction(createPost, {
     onSuccess: () => {
+      form.reset();
       toast.success("Post created successfully!");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
 

@@ -12,14 +12,21 @@ import { signInSchema, signInSchemaType } from "../schemas";
 import { signIn } from "../actions/signin";
 import Link from "next/link";
 import { resetPasswordPath, signUpPath } from "@/path";
+import { Separator } from "@/components/ui/separator";
+import GitHubOAuthButton from "./oauth-button";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 function SignInForm() {
-  const { execute, isPending } = useAction(signIn, {
+  const router = useRouter();
+
+  const { execute, isPending, hasSucceeded } = useAction(signIn, {
     onSuccess: () => {
       toast.success("Sign in successfully!");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
 
@@ -34,6 +41,12 @@ function SignInForm() {
   function onSubmit(data: signInSchemaType) {
     execute(data);
   }
+
+  useEffect(() => {
+    if (hasSucceeded) {
+      router.push("/");
+    }
+  }, [hasSucceeded]);
 
   return (
     <CardWrapper
@@ -77,6 +90,12 @@ function SignInForm() {
         />
         <SubmitButton label="Sign In" isPending={isPending} />
       </form>
+      <div className="w-full flex items-center gap-3 my-4">
+        <Separator className="flex-1" />
+        <p className="text-sm text-muted-foreground">or</p>
+        <Separator className="flex-1" />
+      </div>
+      <GitHubOAuthButton />
     </CardWrapper>
   );
 }

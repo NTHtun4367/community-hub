@@ -8,7 +8,7 @@ interface SubmitButtonProps {
 
 function SubmitButton({ isPending, label }: SubmitButtonProps) {
   return (
-    <Button type="submit" disabled={isPending}>
+    <Button type="submit" disabled={isPending} className="w-full">
       {isPending ? <Loader className="animate-spin" /> : label}
     </Button>
   );

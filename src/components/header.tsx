@@ -14,9 +14,6 @@ async function Header() {
         CU-HUB
       </Link>
       <div className="flex items-center gap-2">
-        <Button variant={"link"} asChild>
-          <Link href={postsPath}>Posts</Link>
-        </Button>
         {session ? <SignOutButton /> : <SignInAndSignUpButtons />}
         <ModeToggle />
       </div>
@@ -41,10 +38,15 @@ function SignInAndSignUpButtons() {
 
 function SignOutButton() {
   return (
-    <form action={signOut}>
-      <Button variant={"destructive"} type="submit">
-        Sign Out
+    <>
+      <Button variant={"link"} asChild>
+        <Link href={postsPath}>My Posts</Link>
       </Button>
-    </form>
+      <form action={signOut}>
+        <Button variant={"destructive"} type="submit">
+          Sign Out
+        </Button>
+      </form>
+    </>
   );
 }

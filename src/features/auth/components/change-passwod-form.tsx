@@ -13,9 +13,12 @@ import {
   changePasswordSchema,
   changePasswordSchemaType,
 } from "../schemas/auth.change-password";
-import { notFound, useSearchParams } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { signInPath } from "@/path";
 
 function ChangePasswordForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -23,12 +26,13 @@ function ChangePasswordForm() {
     notFound();
   }
 
-  const { execute, isPending } = useAction(changePassword, {
+  const { execute, isPending, hasSucceeded } = useAction(changePassword, {
     onSuccess: () => {
       toast.success("Your password has changed.");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
 
@@ -43,6 +47,12 @@ function ChangePasswordForm() {
   function onSubmit(data: changePasswordSchemaType) {
     execute(data);
   }
+
+  useEffect(() => {
+    if (hasSucceeded) {
+      router.push(signInPath);
+    }
+  }, [hasSucceeded]);
 
   return (
     <CardWrapper

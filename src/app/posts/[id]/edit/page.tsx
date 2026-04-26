@@ -1,5 +1,6 @@
 import EditPostForm from "@/features/post/components/edit-post-form";
 import { getPost } from "@/features/post/queries/get-post";
+import { isOwner } from "@/lib/is-owner";
 import { notFound } from "next/navigation";
 
 interface EditPostPageProps {
@@ -9,8 +10,9 @@ interface EditPostPageProps {
 async function EditPostPage({ params }: EditPostPageProps) {
   const { id } = await params;
   const post = await getPost(id);
+  const owner = await isOwner(post?.userId!);
 
-  if (!post) {
+  if (!post || !owner) {
     notFound();
   }
 

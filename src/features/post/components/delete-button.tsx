@@ -15,20 +15,31 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deletePost } from "../actions/delete-post";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { postsPath } from "@/path";
 
 interface DeleteButtonProps {
   id: string;
 }
 
 function DeleteButton({ id }: DeleteButtonProps) {
-  const { execute, isPending } = useAction(deletePost, {
+  const router = useRouter();
+  const { execute, isPending, hasSucceeded } = useAction(deletePost, {
     onSuccess: () => {
       toast.success("Post deleted successfully!");
     },
     onError: ({ error }) => {
-      toast.error(error.serverError || "Something went wrong!");
+      const message = error.serverError || "Something went wrong!";
+      toast.error(message);
     },
   });
+
+  useEffect(() => {
+    if (hasSucceeded) {
+      router.push(postsPath);
+    }
+  }, [hasSucceeded]);
 
   return (
     <AlertDialog>

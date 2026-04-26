@@ -3,8 +3,6 @@
 import { actionClient } from "@/lib/safe-action";
 import { signUpSchema } from "../schemas";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { signInPath } from "@/path";
 
 export const signUp = actionClient
   .inputSchema(signUpSchema)
@@ -17,10 +15,8 @@ export const signUp = actionClient
           password,
         },
       });
-    } catch (error) {
-      console.log(error);
-
-      throw new Error("Something went wrong!");
+    } catch (error: any) {
+      const errorMessage = error?.body?.message || "Something went wrong!";
+      throw new Error(errorMessage);
     }
-    redirect(signInPath);
   });
