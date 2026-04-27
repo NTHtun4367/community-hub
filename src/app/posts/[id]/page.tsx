@@ -1,3 +1,4 @@
+import Comments from "@/features/comment/components/comments";
 import PostItem from "@/features/post/components/post-item";
 import { getPost } from "@/features/post/queries/get-post";
 import { notFound } from "next/navigation";
@@ -14,7 +15,12 @@ async function SinglePostPage({ params }: Props) {
     notFound();
   }
 
-  return <PostItem {...post} isCard={false} />;
+  return (
+    <>
+      <PostItem {...post} isCard={false} />
+      <Comments postId={id} />
+    </>
+  );
 }
 
 export default SinglePostPage;
