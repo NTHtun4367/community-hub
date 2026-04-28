@@ -11,6 +11,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
+import ImageUpload from "./image-upload";
 
 function CreatePostForm() {
   const { execute, isPending } = useAction(createPost, {
@@ -29,6 +30,7 @@ function CreatePostForm() {
     defaultValues: {
       title: "",
       description: "",
+      images: [],
     },
   });
 
@@ -65,6 +67,21 @@ function CreatePostForm() {
                 rows={6}
                 className="min-h-24 resize-none"
                 aria-invalid={fieldState.invalid}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="images"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Images</FieldLabel>
+              <ImageUpload
+                value={field.value}
+                onChange={field.onChange}
+                max={4}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

@@ -22,6 +22,7 @@ import { Post } from "@/generated/prisma/client";
 import { useRouter } from "next/navigation";
 import { postsPath } from "@/path";
 import { useEffect } from "react";
+import ImageUpload from "./image-upload";
 
 interface EditPostFormProps {
   post: Post;
@@ -45,6 +46,7 @@ function EditPostForm({ post }: EditPostFormProps) {
       id: post.id as string,
       title: post.title,
       description: post.description,
+      images: post.images || [],
       status: post.status,
     },
   });
@@ -88,6 +90,21 @@ function EditPostForm({ post }: EditPostFormProps) {
                 rows={6}
                 className="min-h-24 resize-none"
                 aria-invalid={fieldState.invalid}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="images"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Images</FieldLabel>
+              <ImageUpload
+                value={field.value}
+                onChange={field.onChange}
+                max={4}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

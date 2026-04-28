@@ -10,7 +10,7 @@ import { getSession } from "@/lib/get-session";
 
 export const createPost = actionClient
   .inputSchema(postCreateSchema)
-  .action(async ({ parsedInput: { title, description } }) => {
+  .action(async ({ parsedInput: { title, description, images } }) => {
     const session = await getSession();
 
     if (!session) {
@@ -22,6 +22,7 @@ export const createPost = actionClient
         data: {
           title,
           description,
+          images,
           userId: session.user.id,
         },
       });

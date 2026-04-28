@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import DeleteButton from "./delete-button";
 import { getSession } from "@/lib/get-session";
 import { isOwner } from "@/lib/is-owner";
+import PostImages from "./post-images";
 
 interface Props extends Post {
   isCard?: boolean;
@@ -26,12 +27,11 @@ async function PostItem({
   id,
   title,
   description,
+  images,
   status,
   user,
   isCard = true,
 }: Props) {
-  const session = await getSession();
-
   return (
     <Card className="relative">
       <Badge
@@ -45,6 +45,7 @@ async function PostItem({
         <CardDescription className={cn(isCard && "line-clamp-2")}>
           {description}
         </CardDescription>
+        <PostImages images={images} />
         <p className="text-sm text-muted-foreground font-medium">
           @{user.name}
         </p>
