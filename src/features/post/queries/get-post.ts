@@ -4,6 +4,11 @@ import { PostWithUser } from "./get-posts";
 export const getPost = async (id: string): Promise<PostWithUser | null> => {
   return await prisma.post.findUnique({
     where: { id },
-    include: { user: true },
+    include: {
+      user: true,
+      votes: {
+        select: { userId: true, value: true },
+      },
+    },
   });
 };

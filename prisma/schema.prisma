@@ -23,6 +23,7 @@ model Post {
   userId      String
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments    Comment[]
+  votes       Vote[]
 }
 
 model Comment {
@@ -52,6 +53,7 @@ model User {
   accounts      Account[]
   posts         Post[]
   comments      Comment[]
+  votes         Vote[]
 
   @@unique([email])
   @@map("user")
@@ -103,4 +105,19 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  value     Int
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId])
 }

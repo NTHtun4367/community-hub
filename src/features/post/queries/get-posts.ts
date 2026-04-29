@@ -4,6 +4,7 @@ import { SearchParams } from "../types/search-params";
 
 export interface PostWithUser extends Post {
   user: User;
+  votes: { value: number; userId: string }[];
 }
 
 interface PaginatePosts {
@@ -33,7 +34,12 @@ export const getPosts = async (
     prisma.post.findMany({
       where: whereCondition,
       orderBy: { createdAt: searchParams.sort === "asc" ? "asc" : "desc" },
-      include: { user: true },
+      include: {
+        user: true,
+        votes: {
+          select: { userId: true, value: true },
+        },
+      },
       skip,
       take: POST_PER_PAGE,
     }),

@@ -17,10 +17,12 @@ import DeleteButton from "./delete-button";
 import { getSession } from "@/lib/get-session";
 import { isOwner } from "@/lib/is-owner";
 import PostImages from "./post-images";
+import VoteButtons from "./vote-buttons";
 
 interface Props extends Post {
   isCard?: boolean;
   user: User;
+  votes: { value: number; userId: string }[];
 }
 
 async function PostItem({
@@ -30,8 +32,18 @@ async function PostItem({
   images,
   status,
   user,
+  votes,
   isCard = true,
 }: Props) {
+  const session = await getSession();
+  const currentUserId = session?.user.id;
+
+  const score = votes?.reduce((acc, vote) => acc + vote.value, 0);
+
+  const userVote = currentUserId
+    ? votes?.find((v) => v.userId === currentUserId)?.value || null
+    : null;
+
   return (
     <Card className="relative">
       <Badge
@@ -53,6 +65,13 @@ async function PostItem({
         <p className="text-sm text-muted-foreground font-medium">
           @{user.name}
         </p>
+        <div>
+          <VoteButtons
+            postId={id}
+            initialScore={score}
+            initialUserVote={userVote}
+          />
+        </div>
       </CardHeader>
       {isCard && (
         <CardContent className="flex items-center gap-2">
