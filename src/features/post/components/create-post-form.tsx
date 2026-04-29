@@ -12,6 +12,7 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import ImageUpload from "./image-upload";
+import RichTextEditor from "@/components/rich-text-editor";
 
 function CreatePostForm() {
   const { execute, isPending } = useAction(createPost, {
@@ -60,14 +61,8 @@ function CreatePostForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
-              <Textarea
-                {...field}
-                id="description"
-                rows={6}
-                className="min-h-24 resize-none"
-                aria-invalid={fieldState.invalid}
-              />
+              <FieldLabel>Content</FieldLabel>
+              <RichTextEditor value={field.value} onChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
