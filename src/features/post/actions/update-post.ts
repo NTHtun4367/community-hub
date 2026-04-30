@@ -11,7 +11,9 @@ import { getSession } from "@/lib/get-session";
 export const updatePost = actionClient
   .inputSchema(postUpdateSchema)
   .action(
-    async ({ parsedInput: { id, title, description, images, status } }) => {
+    async ({
+      parsedInput: { id, title, description, images, tags, status },
+    }) => {
       const session = await getSession();
 
       if (!session) {
@@ -25,6 +27,7 @@ export const updatePost = actionClient
             title,
             description,
             images,
+            tags,
             status,
           },
         });

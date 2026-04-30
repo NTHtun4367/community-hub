@@ -30,6 +30,7 @@ async function PostItem({
   title,
   description,
   images,
+  tags,
   status,
   user,
   votes,
@@ -62,6 +63,20 @@ async function PostItem({
           dangerouslySetInnerHTML={{ __html: description }}
         />
         <PostImages images={images} />
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 my-1">
+            {tags.map((tag) => (
+              <Link key={tag} href={`/?tag=${tag}`}>
+                <Badge
+                  variant={"outline"}
+                  className="cursor-pointer hover:bg-secondary"
+                >
+                  #{tag}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        )}
         <p className="text-sm text-muted-foreground font-medium">
           @{user.name}
         </p>

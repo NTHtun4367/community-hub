@@ -24,6 +24,7 @@ import { postsPath } from "@/path";
 import { useEffect } from "react";
 import ImageUpload from "./image-upload";
 import RichTextEditor from "@/components/rich-text-editor";
+import TagInput from "./tag-input";
 
 interface EditPostFormProps {
   post: Post;
@@ -48,6 +49,7 @@ function EditPostForm({ post }: EditPostFormProps) {
       title: post.title,
       description: post.description,
       images: post.images || [],
+      tags: post.tags || [],
       status: post.status,
     },
   });
@@ -101,6 +103,17 @@ function EditPostForm({ post }: EditPostFormProps) {
                 onChange={field.onChange}
                 max={4}
               />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="tags"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Tags</FieldLabel>
+              <TagInput value={field.value} onChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

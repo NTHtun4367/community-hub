@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import ImageUpload from "./image-upload";
 import RichTextEditor from "@/components/rich-text-editor";
+import TagInput from "./tag-input";
 
 function CreatePostForm() {
   const { execute, isPending } = useAction(createPost, {
@@ -32,6 +33,7 @@ function CreatePostForm() {
       title: "",
       description: "",
       images: [],
+      tags: [],
     },
   });
 
@@ -78,6 +80,17 @@ function CreatePostForm() {
                 onChange={field.onChange}
                 max={4}
               />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="tags"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Tags</FieldLabel>
+              <TagInput value={field.value} onChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
