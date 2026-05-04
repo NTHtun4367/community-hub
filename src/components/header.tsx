@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { postsPath, signInPath, signUpPath } from "@/path";
+import { postsPath, profilePath, signInPath, signUpPath } from "@/path";
 import { ModeToggle } from "./theme-toggler";
 import { signOut } from "@/features/auth/actions/signout";
 import { getSession } from "@/lib/get-session";
@@ -11,7 +11,7 @@ async function Header() {
   return (
     <div className="flex items-center justify-between mt-4 mb-8">
       <Link href={"/"} className="text-4xl font-bold italic">
-        CU-HUB
+        Coda
       </Link>
       <div className="flex items-center gap-2">
         {session ? <SignOutButton /> : <SignInAndSignUpButtons />}
@@ -39,6 +39,9 @@ function SignInAndSignUpButtons() {
 function SignOutButton() {
   return (
     <>
+      <Button variant={"link"} asChild>
+        <Link href={profilePath}>Profile</Link>
+      </Button>
       <Button variant={"link"} asChild>
         <Link href={postsPath}>My Posts</Link>
       </Button>

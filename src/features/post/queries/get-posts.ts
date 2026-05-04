@@ -36,7 +36,7 @@ export const getPosts = async (
     }),
   };
 
-  const [totalCounts, posts] = await prisma.$transaction([
+  const [totalCounts, posts] = await Promise.all([
     prisma.post.count({ where: whereCondition }),
     prisma.post.findMany({
       where: whereCondition,
