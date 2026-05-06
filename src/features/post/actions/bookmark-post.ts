@@ -5,8 +5,7 @@ import { actionClient } from "@/lib/safe-action";
 import { getSession } from "@/lib/get-session";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { redirect } from "next/navigation";
-import { postsPath, signInPath, singlePostPath } from "@/path";
+import { postsPath, singlePostPath } from "@/path";
 
 const bookmarkSchema = z.object({ postId: z.string() });
 
@@ -16,7 +15,7 @@ export const toggleBookmark = actionClient
     const session = await getSession();
 
     if (!session) {
-      redirect(signInPath);
+      throw new Error("Unauthorized! You need to sign in!");
     }
 
     const userId = session.user.id;

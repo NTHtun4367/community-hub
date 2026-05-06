@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { deleteComment } from "../actions/delete-comment";
+import { Trash2, Loader2 } from "lucide-react";
 
 interface CommentDeleteButtonProps {
   id: string;
@@ -22,38 +22,40 @@ interface CommentDeleteButtonProps {
 
 function CommentDeleteButton({ id }: CommentDeleteButtonProps) {
   const { execute, isPending } = useAction(deleteComment, {
+    onSuccess: () => toast.success("Comment deleted"),
     onError: ({ error }) => {
-      const message = error.serverError || "Something went wrong!";
-      toast.error(message);
+      toast.error(error.serverError || "Something went wrong!");
     },
   });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={"destructive"} size={"sm"} className="text-white">
+        <button className="flex items-center text-xs text-muted-foreground hover:text-destructive transition-colors">
+          <Trash2 className="w-3.5 h-3.5 mr-1" />
           Delete
-        </Button>
+        </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Comment?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            comment from our servers.
+            This action cannot be undone. All nested replies will also be
+            managed based on server settings.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              variant={"destructive"}
-              disabled={isPending}
-              onClick={() => execute({ id })}
-              className="text-white"
-            >
-              Delete
-            </Button>
+          <AlertDialogAction
+            onClick={() => execute({ id })}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Delete"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

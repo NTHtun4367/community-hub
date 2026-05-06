@@ -2,33 +2,39 @@
 
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { signInPath, singlePostPath } from "@/path";
+import { singlePostPath } from "@/path";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 import { commentCreateSchema } from "../schemas/comment.create";
+import { pushNotification } from "@/features/notification/actions/push-notification";
 
 export const createComment = actionClient
   .inputSchema(commentCreateSchema)
-  .action(async ({ parsedInput: { content, postId } }) => {
+  .action(async ({ parsedInput: { content, postId, parentId } }) => {
     const session = await getSession();
-
-    if (!session) {
-      redirect(signInPath);
-    }
+    if (!session) throw new Error("Unauthorized! You need to sign in!");
 
     try {
-      await prisma.comment.create({
+      const newComment = await prisma.comment.create({
         data: {
           content,
           postId,
           userId: session.user.id,
+          parentId,
         },
+        include: { post: true },
+      });
+
+      await pushNotification({
+        recipientId: newComment.post.userId,
+        issuerId: session.user.id,
+        type: "COMMENT",
+        postId: postId,
+        message: `${session.user.name} commented on your post: "${newComment.post.title.substring(0, 20)}..."`,
       });
 
       revalidatePath(singlePostPath(postId));
     } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+      throw new Error("Failed to post comment");
     }
   });

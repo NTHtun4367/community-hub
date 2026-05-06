@@ -3,4 +3,5 @@ export type SearchParams = {
   sort: string | undefined;
   page: string | undefined;
   tag: string | undefined;
+  tab: "new" | "trending" | "top" | undefined;
 };

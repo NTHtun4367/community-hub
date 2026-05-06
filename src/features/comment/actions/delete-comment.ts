@@ -2,9 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { signInPath, singlePostPath } from "@/path";
+import { singlePostPath } from "@/path";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 import { commentDeleteSchema } from "../schemas/comment.delete";
 
@@ -12,23 +11,25 @@ export const deleteComment = actionClient
   .inputSchema(commentDeleteSchema)
   .action(async ({ parsedInput: { id } }) => {
     const session = await getSession();
-
-    if (!session) {
-      redirect(signInPath);
-    }
+    if (!session) throw new Error("Unauthorized! You need to sign in!");
 
     try {
-      const comment = await prisma.comment.findUnique({ where: { id } });
+      const comment = await prisma.comment.findUnique({
+        where: { id },
+        select: { userId: true, postId: true },
+      });
 
-      if (!comment) {
-        throw new Error("No comment found!");
-      }
+      if (!comment) throw new Error("Comment not found.");
+      if (comment.userId !== session.user.id)
+        throw new Error("Unauthorized delete attempt.");
 
-      await prisma.comment.delete({ where: { id, userId: session.user.id } });
+      await prisma.comment.delete({
+        where: { id },
+      });
 
       revalidatePath(singlePostPath(comment.postId));
+      return { success: true };
     } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+      throw new Error(error.message || "Failed to delete comment.");
     }
   });

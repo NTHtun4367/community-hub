@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { PostWithUser } from "./get-posts";
+import { PostWithUser } from "../types/post";
 
 export const getPost = async (id: string): Promise<PostWithUser | null> => {
   return await prisma.post.findUnique({
@@ -9,6 +9,8 @@ export const getPost = async (id: string): Promise<PostWithUser | null> => {
       votes: {
         select: { userId: true, value: true },
       },
+      bookmarks: { select: { userId: true } },
+      _count: { select: { comments: true, votes: true } },
     },
   });
 };

@@ -2,9 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { postsPath, signInPath } from "@/path";
+import { postsPath } from "@/path";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { postDeleteSchema } from "../schemas";
 import { getSession } from "@/lib/get-session";
 
@@ -14,7 +13,7 @@ export const deletePost = actionClient
     const session = await getSession();
 
     if (!session) {
-      redirect(signInPath);
+      throw new Error("Unauthorized! You need to sign in!");
     }
 
     try {

@@ -1,13 +1,11 @@
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
-import { signInPath } from "@/path";
-import { redirect } from "next/navigation";
 
 export const getSavedPosts = async () => {
   const session = await getSession();
 
   if (!session) {
-    redirect(signInPath);
+    throw new Error("Unauthorized! You need to sign in!");
   }
 
   return await prisma.post.findMany({

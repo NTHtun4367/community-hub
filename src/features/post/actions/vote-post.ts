@@ -2,20 +2,17 @@
 
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { postsPath, signInPath, singlePostPath } from "@/path";
+import { postsPath, singlePostPath } from "@/path";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 import { postVoteSchema } from "../schemas/post.vote";
+import { pushNotification } from "../../notification/actions/push-notification";
 
 export const voteOnPost = actionClient
   .inputSchema(postVoteSchema)
   .action(async ({ parsedInput: { postId, value } }) => {
     const session = await getSession();
-
-    if (!session) {
-      redirect(signInPath);
-    }
+    if (!session) throw new Error("You need to sign in!");
 
     const userId = session.user.id;
 
@@ -24,6 +21,7 @@ export const voteOnPost = actionClient
         where: { userId_postId: { userId, postId } },
       });
 
+      // Vote logic...
       if (existingVote) {
         if (existingVote.value === value) {
           await prisma.vote.delete({ where: { id: existingVote.id } });
@@ -34,7 +32,21 @@ export const voteOnPost = actionClient
           });
         }
       } else {
-        await prisma.vote.create({ data: { userId, postId, value } });
+        const vote = await prisma.vote.create({
+          data: { userId, postId, value },
+          include: { post: true },
+        });
+
+        // only send noti when upvote
+        if (value > 0) {
+          await pushNotification({
+            recipientId: vote.post.userId,
+            issuerId: userId,
+            type: "VOTE",
+            postId: postId,
+            message: `${session.user.name} upvoted your post!`,
+          });
+        }
       }
 
       revalidatePath(postsPath);

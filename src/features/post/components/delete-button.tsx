@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { postsPath } from "@/path";
+import { Trash2 } from "lucide-react";
 
 interface DeleteButtonProps {
   id: string;
@@ -44,8 +45,8 @@ function DeleteButton({ id }: DeleteButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={"destructive"} size={"sm"}>
-          Delete
+        <Button variant="ghost" size="sm" className="h-9 w-9 rounded-xl">
+          <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -1,11 +1,6 @@
-import { Post, User } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { SearchParams } from "../types/search-params";
-
-export interface PostWithUser extends Post {
-  user: User;
-  votes: { value: number; userId: string }[];
-}
+import { PostWithUser } from "../types/post";
 
 interface PaginatePosts {
   posts: PostWithUser[];
@@ -17,35 +12,49 @@ export const getPosts = async (
   userId: string | undefined,
   searchParams: SearchParams,
 ): Promise<PaginatePosts> => {
-  const POST_PER_PAGE = 2;
+  const POST_PER_PAGE = 10;
   const currentPage = Number(searchParams.page) || 1;
   const skip = (currentPage - 1) * POST_PER_PAGE;
 
-  const tagFilter = searchParams.tag;
+  const tab = searchParams.tab || "new";
 
-  const whereCondition = {
+  // Filter logic
+  const whereCondition: any = {
     userId,
     title: {
-      contains: searchParams.search,
+      contains: searchParams.search || "",
       mode: "insensitive" as const,
     },
-    ...(tagFilter && {
-      tags: {
-        has: tagFilter,
-      },
+    ...(searchParams.tag && {
+      tags: { has: searchParams.tag },
     }),
   };
+
+  // if trending, show last 24h posts
+  if (tab === "trending") {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    whereCondition.createdAt = { gte: oneDayAgo };
+  }
+
+  // Sorting logic
+  let orderBy: any = {
+    createdAt: searchParams.sort === "asc" ? "asc" : "desc",
+  };
+
+  if (tab === "top" || tab === "trending") {
+    orderBy = { votes: { _count: "desc" } };
+  }
 
   const [totalCounts, posts] = await Promise.all([
     prisma.post.count({ where: whereCondition }),
     prisma.post.findMany({
       where: whereCondition,
-      orderBy: { createdAt: searchParams.sort === "asc" ? "asc" : "desc" },
+      orderBy: orderBy,
       include: {
         user: true,
-        votes: {
-          select: { userId: true, value: true },
-        },
+        votes: { select: { userId: true, value: true } },
+        bookmarks: { select: { userId: true } },
+        _count: { select: { comments: true, votes: true } },
       },
       skip,
       take: POST_PER_PAGE,
@@ -55,7 +64,7 @@ export const getPosts = async (
   const totalPages = Math.ceil(totalCounts / POST_PER_PAGE);
 
   return {
-    posts,
+    posts: posts as PostWithUser[],
     totalPages,
     currentPage,
   };

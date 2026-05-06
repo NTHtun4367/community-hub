@@ -1,5 +1,11 @@
-export interface Post {
-  id: string | number;
-  title: string;
-  description: string;
+import { Post, User } from "@/generated/prisma/client";
+
+export interface PostWithUser extends Post {
+  user: User;
+  votes: { value: number; userId: string }[];
+  bookmarks: { userId: string }[];
+  _count: {
+    comments: number;
+    votes: number;
+  };
 }

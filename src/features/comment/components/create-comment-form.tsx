@@ -1,7 +1,6 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import CardWrapper from "../../../components/card-wrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Field, FieldError } from "@/components/ui/field";
@@ -14,17 +13,24 @@ import {
   commentCreateSchemaType,
 } from "../schemas/comment.create";
 import { useParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-function CreateCommentForm() {
+interface CreateCommentFormProps {
+  parentId?: string;
+  onSuccess?: () => void;
+}
+
+function CreateCommentForm({ parentId, onSuccess }: CreateCommentFormProps) {
   const params = useParams<{ id: string }>();
 
   const { execute, isPending } = useAction(createComment, {
     onSuccess: () => {
       form.reset();
+      toast.success(parentId ? "Reply posted!" : "Comment posted!");
+      if (onSuccess) onSuccess();
     },
     onError: ({ error }) => {
-      const message = error.serverError || "Something went wrong!";
-      toast.error(message);
+      toast.error(error.serverError || "Something went wrong!");
     },
   });
 
@@ -33,6 +39,7 @@ function CreateCommentForm() {
     defaultValues: {
       content: "",
       postId: params.id,
+      parentId: parentId,
     },
   });
 
@@ -41,30 +48,47 @@ function CreateCommentForm() {
   }
 
   return (
-    <CardWrapper
-      title="Create new comment"
-      description="This will be create a new comment in this post."
+    <div
+      className={cn(
+        "w-full transition-all duration-200",
+        !parentId && "bg-card border rounded-lg p-4 shadow-sm",
+      )}
     >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        {!parentId && (
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">
+            Leave a comment
+          </h3>
+        )}
+
         <Controller
           name="content"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <Textarea
-                placeholder="write a comment..."
                 {...field}
-                rows={6}
-                className="min-h-24 resize-none"
-                aria-invalid={fieldState.invalid}
+                placeholder={
+                  parentId ? "Write a reply..." : "What are your thoughts?"
+                }
+                className={cn(
+                  "min-h-25 resize-none bg-background focus-visible:ring-1",
+                  parentId && "min-h-20",
+                )}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
-        <SubmitButton label="Create" isPending={isPending} />
+
+        <div className="flex justify-end gap-2">
+          <SubmitButton
+            label={parentId ? "Reply" : "Post Comment"}
+            isPending={isPending}
+          />
+        </div>
       </form>
-    </CardWrapper>
+    </div>
   );
 }
 

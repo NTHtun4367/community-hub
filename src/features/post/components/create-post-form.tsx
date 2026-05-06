@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { createPost } from "@/features/post/actions/create-post";
 import CardWrapper from "../../../components/card-wrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,16 +13,19 @@ import SubmitButton from "../../../components/submit-button";
 import ImageUpload from "./image-upload";
 import RichTextEditor from "@/components/rich-text-editor";
 import TagInput from "./tag-input";
+import { useRouter } from "next/navigation";
+import { postsPath } from "@/path";
 
 function CreatePostForm() {
+  const router = useRouter();
   const { execute, isPending } = useAction(createPost, {
     onSuccess: () => {
       form.reset();
       toast.success("Post created successfully!");
+      router.push(postsPath);
     },
     onError: ({ error }) => {
-      const message = error.serverError || "Something went wrong!";
-      toast.error(message);
+      toast.error(error.serverError || "Something went wrong!");
     },
   });
 
@@ -44,20 +46,26 @@ function CreatePostForm() {
   return (
     <CardWrapper
       title="Create new post"
-      description="This will be create new post."
+      description="Share your thoughts with the community."
     >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Controller
           name="title"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="title">Title</FieldLabel>
-              <Input {...field} id="title" aria-invalid={fieldState.invalid} />
+              <Input
+                {...field}
+                id="title"
+                placeholder="Enter post title"
+                aria-invalid={fieldState.invalid}
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
+
         <Controller
           name="description"
           control={form.control}
@@ -69,12 +77,13 @@ function CreatePostForm() {
             </Field>
           )}
         />
+
         <Controller
           name="images"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Images</FieldLabel>
+              <FieldLabel>Images (Max 4)</FieldLabel>
               <ImageUpload
                 value={field.value}
                 onChange={field.onChange}
@@ -84,6 +93,7 @@ function CreatePostForm() {
             </Field>
           )}
         />
+
         <Controller
           name="tags"
           control={form.control}
@@ -95,7 +105,8 @@ function CreatePostForm() {
             </Field>
           )}
         />
-        <SubmitButton label="Create" isPending={isPending} />
+
+        <SubmitButton label="Create Post" isPending={isPending} />
       </form>
     </CardWrapper>
   );
