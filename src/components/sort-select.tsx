@@ -38,7 +38,7 @@ function SortSelect({ defaultValue, options }: Props) {
       defaultValue={searchParams.get("sort") || defaultValue}
       onValueChange={handleSelect}
     >
-      <SelectTrigger>
+      <SelectTrigger size="sm">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

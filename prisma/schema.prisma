@@ -13,18 +13,25 @@ datasource db {
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  title       String
-  description String
-  images      String[]   @default([])
-  tags        String[]   @default([])
-  status      PostStatus @default(IN_PROGRESS)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  votes       Vote[]
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  images        String[]       @default([])
+  tags          String[]       @default([])
+  status        PostStatus     @default(IN_PROGRESS)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  votes         Vote[]
+  bookmarks     Bookmark[]
+  notifications Notification[]
+}
+
+enum PostStatus {
+  DONE
+  IN_PROGRESS
 }
 
 model Comment {
@@ -35,11 +42,11 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-}
 
-enum PostStatus {
-  DONE
-  IN_PROGRESS
+  // Reply System
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
 }
 
 model User {
@@ -56,14 +63,17 @@ model User {
   premiumCurrency      String?
   premiumLastPaymentAt DateTime?
 
-  image     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  sessions  Session[]
-  accounts  Account[]
-  posts     Post[]
-  comments  Comment[]
-  votes     Vote[]
+  image               String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  sessions            Session[]
+  accounts            Account[]
+  posts               Post[]
+  comments            Comment[]
+  votes               Vote[]
+  bookmarks           Bookmark[]
+  notifications       Notification[] @relation("RecipientRelation")
+  issuedNotifications Notification[] @relation("IssuerRelation")
 
   @@unique([email])
   @@map("user")
@@ -130,4 +140,36 @@ model Vote {
   @@unique([userId, postId])
   @@index([postId])
   @@index([userId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String // post owner
+  issuerId    String // interact user
+  type        NotificationType
+  postId      String?
+  message     String
+  isRead      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  recipient User  @relation("RecipientRelation", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuer    User  @relation("IssuerRelation", fields: [issuerId], references: [id], onDelete: Cascade)
+  post      Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  VOTE
+  COMMENT
 }
