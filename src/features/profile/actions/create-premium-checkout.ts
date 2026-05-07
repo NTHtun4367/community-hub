@@ -4,8 +4,7 @@ import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
 import { stripe } from "@/lib/stripe";
-import { profilePath, signInPath } from "@/path";
-import { redirect } from "next/navigation";
+import { profilePath } from "@/path";
 import z from "zod";
 
 const createPreimumCheckoutSchema = z.object({});
@@ -16,7 +15,7 @@ export const createPremiumCheckout = actionClient
     const session = await getSession();
 
     if (!session) {
-      redirect(signInPath);
+      throw new Error("Unauthorized! You need to sign in!");
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_APP_URL;

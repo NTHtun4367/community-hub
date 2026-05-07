@@ -5,8 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/get-session";
 import { notiSchema } from "../schemas/noti";
-import { redirect } from "next/navigation";
-import { signInPath } from "@/path";
+import { notificationPath } from "@/path";
 
 // Delete Single Notification
 export const deleteNotification = actionClient
@@ -15,14 +14,14 @@ export const deleteNotification = actionClient
     const session = await getSession();
 
     if (!session) {
-      redirect(signInPath);
+      throw new Error("Unauthorized! You need to sign in!");
     }
 
     try {
       await prisma.notification.delete({
         where: { id },
       });
-      revalidatePath("/");
+      revalidatePath(notificationPath);
     } catch (error: any) {
       const errorMessage = error?.body?.message || "Something went wrong!";
       throw new Error(errorMessage);
@@ -34,14 +33,14 @@ export const deleteAllNotifications = actionClient.action(async () => {
   const session = await getSession();
 
   if (!session) {
-    redirect(signInPath);
+    throw new Error("Unauthorized! You need to sign in!");
   }
 
   try {
     await prisma.notification.deleteMany({
       where: { recipientId: session.user.id },
     });
-    revalidatePath("/");
+    revalidatePath(notificationPath);
   } catch (error: any) {
     const errorMessage = error?.body?.message || "Something went wrong!";
     throw new Error(errorMessage);

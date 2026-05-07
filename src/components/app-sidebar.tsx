@@ -59,10 +59,10 @@ export function AppSidebar({ session }: Props) {
         >
           <div className="relative h-13 w-13 shrink-0 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 transition-all duration-300">
             <Image
-              sizes=""
               src="/coda-logo.png"
               alt="Coda Logo"
               fill
+              sizes="(max-width: 768px) 32px, 40px"
               className="object-contain"
               priority
             />

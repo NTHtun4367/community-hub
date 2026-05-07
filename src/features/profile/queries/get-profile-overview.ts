@@ -1,5 +1,6 @@
 "use server";
 
+import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 
 interface ProfileOverview {
@@ -12,9 +13,15 @@ interface ProfileOverview {
   premiumLastPaymentAt: Date | null;
 }
 
-export const getProviewOverview = async (
-  userId: string,
-): Promise<ProfileOverview> => {
+export const getProfileOverview = async (): Promise<ProfileOverview> => {
+  const session = await getSession();
+
+  if (!session) {
+    throw new Error("Unauthorized! You need to sign in!");
+  }
+
+  const userId = session.user.id;
+
   const [user, postCount, commentCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },

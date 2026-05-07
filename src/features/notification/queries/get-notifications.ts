@@ -4,7 +4,7 @@ import { getSession } from "@/lib/get-session";
 export const getNotifications = async () => {
   const session = await getSession();
 
-  if (!session) return [];
+  if (!session) throw new Error("Unauthorized! You need to sign in!");
 
   return await prisma.notification.findMany({
     where: {

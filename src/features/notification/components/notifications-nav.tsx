@@ -12,6 +12,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { markAllAsRead, markAsRead } from "../actions/push-notification";
 import { Notification } from "@/generated/prisma/client";
+import { notificationPath } from "@/path";
 
 interface Props {
   notifications: Notification[];
@@ -19,6 +20,7 @@ interface Props {
 
 export function NotificationsNav({ notifications }: Props) {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const displayNotifications = notifications.slice(0, 3);
 
   return (
     <DropdownMenu>
@@ -55,7 +57,7 @@ export function NotificationsNav({ notifications }: Props) {
               No updates yet
             </div>
           ) : (
-            notifications.map((n) => (
+            displayNotifications.map((n) => (
               <DropdownMenuItem
                 key={n.id}
                 asChild
@@ -87,7 +89,7 @@ export function NotificationsNav({ notifications }: Props) {
         </div>
 
         <Link
-          href="/notifications"
+          href={notificationPath}
           className="p-3 text-center text-xs font-medium border-t hover:bg-muted transition-colors flex items-center justify-center gap-2 text-muted-foreground"
         >
           View All Notifications <ExternalLink size={12} />

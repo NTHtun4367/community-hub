@@ -5,8 +5,14 @@ import { actionClient } from "@/lib/safe-action";
 import { getSession } from "@/lib/get-session";
 import { revalidatePath } from "next/cache";
 import { notiSchema } from "../schemas/noti";
-import { redirect } from "next/navigation";
-import { signInPath } from "@/path";
+
+interface Props {
+  recipientId: string;
+  issuerId: string;
+  type: "VOTE" | "COMMENT";
+  postId: string;
+  message: string;
+}
 
 export const pushNotification = async ({
   recipientId,
@@ -14,13 +20,7 @@ export const pushNotification = async ({
   type,
   postId,
   message,
-}: {
-  recipientId: string;
-  issuerId: string;
-  type: "VOTE" | "COMMENT";
-  postId: string;
-  message: string;
-}) => {
+}: Props) => {
   // if owner
   if (recipientId === issuerId) return;
 
@@ -47,7 +47,7 @@ export const markAsRead = actionClient
     const session = await getSession();
 
     if (!session) {
-      redirect(signInPath);
+      throw new Error("Unauthorized! You need to sign in!");
     }
 
     try {
@@ -67,7 +67,7 @@ export const markAllAsRead = actionClient.action(async () => {
   const session = await getSession();
 
   if (!session) {
-    redirect(signInPath);
+    throw new Error("Unauthorized! You need to sign in!");
   }
 
   try {
