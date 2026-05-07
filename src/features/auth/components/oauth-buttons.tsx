@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
-export default function OAuthButton() {
+export default function OAuthButtons() {
   const gitHubOAuthHandler = async () => {
     await authClient.signIn.social({
       provider: "github",

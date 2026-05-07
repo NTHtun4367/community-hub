@@ -10,18 +10,18 @@ import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import { signUpSchema, signUpSchemaType } from "../schemas";
 import { signUp } from "../actions/signup";
-import Link from "next/link";
-import { signInPath } from "@/path";
-import GitHubOAuthButton from "./oauth-button";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import OAuthButtons from "./oauth-buttons";
 
-function SignUpForm() {
-  const router = useRouter();
-  const { execute, isPending, hasSucceeded } = useAction(signUp, {
+interface SignUpFormProps {
+  onSwitchView: () => void;
+}
+
+function SignUpForm({ onSwitchView }: SignUpFormProps) {
+  const { execute, isPending } = useAction(signUp, {
     onSuccess: () => {
-      toast.success("Sign up successfully!");
+      toast.success("Sign up successfully! Please sign in.");
+      onSwitchView();
     },
     onError: ({ error }) => {
       const message = error.serverError || "Something went wrong!";
@@ -31,29 +31,29 @@ function SignUpForm() {
 
   const form = useForm<signUpSchemaType>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
   function onSubmit(data: signUpSchemaType) {
     execute(data);
   }
 
-  useEffect(() => {
-    if (hasSucceeded) {
-      router.push(signInPath);
-    }
-  }, [hasSucceeded]);
-
   return (
     <CardWrapper
       title="Sign Up"
       description="Create your new account."
-      footer={<Footer />}
+      footer={
+        <p className="text-sm text-muted-foreground font-medium">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchView}
+            className="underline hover:text-primary transition-colors"
+          >
+            Sign in
+          </button>
+        </p>
+      }
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Controller
@@ -97,9 +97,9 @@ function SignUpForm() {
               <Input
                 {...field}
                 id="password"
-                aria-invalid={fieldState.invalid}
-                placeholder="******"
                 type="password"
+                placeholder="******"
+                aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -111,14 +111,14 @@ function SignUpForm() {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="confirmPassword">
-                Confirm Passwrod
+                Confirm Password
               </FieldLabel>
               <Input
                 {...field}
                 id="confirmPassword"
-                aria-invalid={fieldState.invalid}
-                placeholder="******"
                 type="password"
+                placeholder="******"
+                aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -131,20 +131,9 @@ function SignUpForm() {
         <p className="text-sm text-muted-foreground">or</p>
         <Separator className="flex-1" />
       </div>
-      <GitHubOAuthButton />
+      <OAuthButtons />
     </CardWrapper>
   );
 }
 
 export default SignUpForm;
-
-function Footer() {
-  return (
-    <p className="text-sm text-muted-foreground font-medium">
-      Already have an account?{" "}
-      <Link href={signInPath} className="underline">
-        Sign in
-      </Link>
-    </p>
-  );
-}

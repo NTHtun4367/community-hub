@@ -10,19 +10,29 @@ import { toast } from "sonner";
 import SubmitButton from "../../../components/submit-button";
 import { signInSchema, signInSchemaType } from "../schemas";
 import { signIn } from "../actions/signin";
-import Link from "next/link";
-import { resetPasswordPath, signUpPath } from "@/path";
 import { Separator } from "@/components/ui/separator";
-import GitHubOAuthButton from "./oauth-button";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import OAuthButtons from "./oauth-buttons";
+import Link from "next/link";
+import { resetPasswordPath } from "@/path";
 
-function SignInForm() {
+interface SignInFormProps {
+  onSwitchView: () => void;
+  setIsOpen: (open: boolean) => void;
+}
+
+function SignInForm({ onSwitchView, setIsOpen }: SignInFormProps) {
   const router = useRouter();
 
   const { execute, isPending, hasSucceeded } = useAction(signIn, {
     onSuccess: () => {
-      toast.success("Sign in successfully!");
+      router.refresh();
+
+      setTimeout(() => {
+        router.push("/");
+      }, 100);
+      setIsOpen(false);
     },
     onError: ({ error }) => {
       const message = error.serverError || "Something went wrong!";
@@ -32,10 +42,7 @@ function SignInForm() {
 
   const form = useForm<signInSchemaType>({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   function onSubmit(data: signInSchemaType) {
@@ -46,13 +53,34 @@ function SignInForm() {
     if (hasSucceeded) {
       router.push("/");
     }
-  }, [hasSucceeded]);
+  }, [hasSucceeded, router]);
 
   return (
     <CardWrapper
       title="Sign In"
       description="Sign in to your account."
-      footer={<Footer />}
+      footer={
+        <div className="w-full flex items-center justify-between text-sm text-muted-foreground font-medium">
+          <p>
+            Don't have an account?{" "}
+            <button
+              type="button"
+              onClick={onSwitchView}
+              className="underline hover:text-primary transition-colors"
+            >
+              Sign up
+            </button>
+          </p>
+          <div onClick={() => setIsOpen(false)}>
+            <Link
+              href={resetPasswordPath}
+              className="underline hover:text-primary transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
+      }
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Controller
@@ -80,9 +108,9 @@ function SignInForm() {
               <Input
                 {...field}
                 id="password"
-                aria-invalid={fieldState.invalid}
-                placeholder="******"
                 type="password"
+                placeholder="******"
+                aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -95,25 +123,9 @@ function SignInForm() {
         <p className="text-sm text-muted-foreground">or</p>
         <Separator className="flex-1" />
       </div>
-      <GitHubOAuthButton />
+      <OAuthButtons />
     </CardWrapper>
   );
 }
 
 export default SignInForm;
-
-function Footer() {
-  return (
-    <div className="w-full flex items-center justify-between text-sm text-muted-foreground font-medium">
-      <p>
-        Don't have an account?{" "}
-        <Link href={signUpPath} className="underline">
-          Sign up
-        </Link>
-      </p>
-      <Link href={resetPasswordPath} className="underline">
-        Forgot password?
-      </Link>
-    </div>
-  );
-}

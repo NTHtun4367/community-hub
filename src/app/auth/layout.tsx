@@ -1,5 +1,4 @@
 import { getSession } from "@/lib/get-session";
-import { postsPath } from "@/path";
 import { redirect } from "next/navigation";
 
 export default async function AuthLayout({
@@ -10,7 +9,7 @@ export default async function AuthLayout({
   const session = await getSession();
 
   if (session) {
-    redirect(postsPath);
+    redirect("/");
   }
 
   return <>{children}</>;
