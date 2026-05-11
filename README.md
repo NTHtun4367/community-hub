@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CODA - Developer Forum
 
-## Getting Started
+CODA is a high-performance, full-stack discussion platform designed for developers. Built with the latest web technologies, it features a robust authentication system, real-time engagement mechanics, and a seamless Stripe-powered subscription model.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **Secure Authentication:** Email/Password and Google, GitHub OAuth integration powered by **Better Auth**.
+* **Dynamic Content:** Create, edit, and delete posts with support for rich text and image uploads.
+* **Engagement System:** Nested commenting and a Reddit-style upvote/downvote system.
+* **Premium Subscriptions:** Tiered access via **Stripe** with automated webhook synchronization.
+* **Visual Perks:** Exclusive UI enhancements for premium members, including special effects on post cards.
+* **User Profiles:** Dedicated dashboards tracking user stats, payment history, and membership status.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+* **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+* **Frontend:** React 19, TypeScript, Tailwind CSS 4
+* **UI Components:** shadcn/ui + Radix UI
+* **Database & ORM:** Prisma ORM, PostgreSQL
+* **Auth:** Better Auth
+* **Payments:** Stripe API + Webhooks
+* **Validation & Forms:** Zod + React Hook Form + next-safe-action
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎤 Presentation Demo Flow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Onboarding:** Sign up as a new user or use GitHub or Google OAuth.
+2. **Content Creation:** Create a new post featuring tags and formatted text.
+3. **Community Interaction:** Add a comment and demonstrate the voting system.
+4. **Monetization:** Navigate to the profile, initiate the Stripe checkout, and complete a test payment.
+5. **Validation:** Trigger the webhook to show the real-time status update and the "Premium" visual flair on your posts.
