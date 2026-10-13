@@ -62,7 +62,7 @@ function SignInForm({ onSwitchView, setIsOpen }: SignInFormProps) {
       footer={
         <div className="w-full flex items-center justify-between text-sm text-muted-foreground font-medium">
           <p>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button
               type="button"
               onClick={onSwitchView}

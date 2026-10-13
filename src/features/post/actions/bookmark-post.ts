@@ -40,7 +40,7 @@ export const toggleBookmark = actionClient
       revalidatePath(postsPath);
       revalidatePath(singlePostPath(postId));
       return { isBookmarked: true };
-    } catch (error) {
-      throw new Error("Failed to bookmark!");
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : "Failed to bookmark!");
     }
   });

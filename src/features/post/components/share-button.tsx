@@ -3,6 +3,7 @@
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { singlePostPath } from "@/path";
 
 interface ShareButtonProps {
   postId: string;
@@ -11,7 +12,7 @@ interface ShareButtonProps {
 
 function ShareButton({ postId, title }: ShareButtonProps) {
   const handleShare = async () => {
-    const url = `${window.location.origin}/post/${postId}`;
+    const url = new URL(singlePostPath(postId), window.location.origin).toString();
 
     if (navigator.share) {
       try {
@@ -30,7 +31,7 @@ function ShareButton({ postId, title }: ShareButtonProps) {
       try {
         await navigator.clipboard.writeText(url);
         toast.success("Link copied to clipboard");
-      } catch (err) {
+      } catch {
         toast.error("Failed to copy link");
       }
     }

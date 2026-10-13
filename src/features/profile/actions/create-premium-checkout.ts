@@ -3,7 +3,7 @@
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { profilePath } from "@/path";
 import z from "zod";
 
@@ -24,6 +24,8 @@ export const createPremiumCheckout = actionClient
     if (!siteUrl || !priceId) {
       throw new Error("Stripe env variables are missing!");
     }
+
+    const stripe = getStripe();
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

@@ -28,6 +28,15 @@ import { profilePath, postsPath, savedPostPath } from "@/path";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
+interface SidebarSession {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    isPremium?: boolean;
+  };
+}
+
 // Main Navigation
 const navItems = [
   { title: "Home", icon: Home, url: "/" },
@@ -42,7 +51,7 @@ const userItems = [
 ];
 
 interface Props {
-  session: any;
+  session: SidebarSession | null;
 }
 
 export function AppSidebar({ session }: Props) {

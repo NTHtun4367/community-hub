@@ -4,6 +4,7 @@ import { generateReactHelpers } from "@uploadthing/react";
 import { Trash2, ImagePlus, Loader2 } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
@@ -128,10 +129,13 @@ function ImageUpload({ value, onChange, max = 4 }: ImageUploadProps) {
               key={url}
               className="group relative aspect-square overflow-hidden rounded-lg border bg-muted shadow-sm"
             >
-              <img
+              <Image
                 src={url}
                 alt={`Upload ${i + 1}`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                fill
+                sizes="(max-width: 640px) 50vw, 25vw"
+                unoptimized
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" />
               <button

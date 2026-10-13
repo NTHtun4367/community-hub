@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { SearchParams } from "../types/search-params";
 import { PostWithUser } from "../types/post";
+import { Prisma } from "@/generated/prisma/client";
 
 interface PaginatePosts {
   posts: PostWithUser[];
@@ -13,17 +14,20 @@ export const getPosts = async (
   searchParams: SearchParams,
 ): Promise<PaginatePosts> => {
   const POST_PER_PAGE = 10;
-  const currentPage = Number(searchParams.page) || 1;
+  const requestedPage = Number.parseInt(searchParams.page ?? "1", 10);
+  const currentPage = Number.isFinite(requestedPage)
+    ? Math.max(1, Math.min(requestedPage, 10_000))
+    : 1;
   const skip = (currentPage - 1) * POST_PER_PAGE;
 
-  const tab = searchParams.tab || "new";
+  const tab = searchParams.tab ?? "new";
 
   // Filter logic
-  const whereCondition: any = {
-    userId,
+  const whereCondition: Prisma.PostWhereInput = {
+    ...(userId !== undefined ? { userId } : {}),
     title: {
-      contains: searchParams.search || "",
-      mode: "insensitive" as const,
+      contains: (searchParams.search ?? "").slice(0, 100),
+      mode: "insensitive",
     },
     ...(searchParams.tag && {
       tags: { has: searchParams.tag },
@@ -37,12 +41,17 @@ export const getPosts = async (
   }
 
   // Sorting logic
-  let orderBy: any = {
-    createdAt: searchParams.sort === "asc" ? "asc" : "desc",
-  };
+  let orderBy: Prisma.PostOrderByWithRelationInput[] = [
+    { createdAt: searchParams.sort === "asc" ? "asc" : "desc" },
+    { id: "desc" },
+  ];
 
   if (tab === "top" || tab === "trending") {
-    orderBy = { votes: { _count: "desc" } };
+    orderBy = [
+      { votes: { _count: "desc" } },
+      { createdAt: "desc" },
+      { id: "desc" },
+    ];
   }
 
   const [totalCounts, posts] = await Promise.all([

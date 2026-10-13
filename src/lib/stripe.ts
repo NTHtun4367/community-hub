@@ -1,5 +1,11 @@
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2026-04-22.dahlia",
-});
+const secretKey = process.env.STRIPE_SECRET_KEY;
+
+export const getStripe = () => {
+  if (!secretKey) {
+    throw new Error("STRIPE_SECRET_KEY is required for premium billing.");
+  }
+
+  return new Stripe(secretKey, { apiVersion: "2026-04-22.dahlia" });
+};

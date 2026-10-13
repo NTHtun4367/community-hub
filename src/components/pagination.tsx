@@ -29,14 +29,11 @@ function Pagination({ totalPages, currentPage }: Props) {
 
   if (totalPages <= 1) return null;
 
-  // Helper to generate page numbers to show (e.g., 1, 2, 3...)
-  const getPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
+  const visiblePages = Array.from(
+    new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages])
+  )
+    .filter((page) => page >= 1 && page <= totalPages)
+    .sort((a, b) => a - b);
 
   return (
     <div className="flex flex-col items-center gap-4 py-8">
@@ -55,7 +52,11 @@ function Pagination({ totalPages, currentPage }: Props) {
 
         {/* Page Numbers */}
         <div className="flex items-center gap-1">
-          {getPageNumbers().map((page) => (
+          {visiblePages.map((page, index) => (
+            <span key={`gap-${page}`} className="contents">
+              {index > 0 && page - visiblePages[index - 1] > 1 && (
+                <span className="px-1 text-sm text-muted-foreground" aria-hidden="true">…</span>
+              )}
             <Button
               key={page}
               variant={currentPage === page ? "default" : "ghost"}
@@ -70,6 +71,7 @@ function Pagination({ totalPages, currentPage }: Props) {
             >
               {page}
             </Button>
+            </span>
           ))}
         </div>
 

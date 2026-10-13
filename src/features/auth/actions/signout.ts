@@ -10,7 +10,7 @@ export const signOut = async () => {
     await auth.api.signOut({
       headers: await headers(),
     });
-  } catch (error) {
+  } catch {
     throw new Error("Something went wrong!");
   }
   redirect(postsPath);

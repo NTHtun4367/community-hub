@@ -21,37 +21,36 @@ export const voteOnPost = actionClient
         where: { userId_postId: { userId, postId } },
       });
 
-      // Vote logic...
-      if (existingVote) {
-        if (existingVote.value === value) {
-          await prisma.vote.delete({ where: { id: existingVote.id } });
-        } else {
-          await prisma.vote.update({
-            where: { id: existingVote.id },
-            data: { value },
-          });
-        }
-      } else {
-        const vote = await prisma.vote.create({
-          data: { userId, postId, value },
-          include: { post: true },
+      if (!existingVote) {
+        const post = await prisma.post.findUnique({
+          where: { id: postId },
+          select: { userId: true },
         });
-
-        // only send noti when upvote
+        if (!post) throw new Error("Post not found.");
+        await prisma.vote.create({
+          data: { userId, postId, value },
+        });
         if (value > 0) {
           await pushNotification({
-            recipientId: vote.post.userId,
+            recipientId: post.userId,
             issuerId: userId,
             type: "VOTE",
-            postId: postId,
+            postId,
             message: `${session.user.name} upvoted your post!`,
           });
         }
+      } else if (existingVote.value === value) {
+        await prisma.vote.delete({ where: { id: existingVote.id } });
+      } else {
+        await prisma.vote.update({
+          where: { id: existingVote.id },
+          data: { value },
+        });
       }
 
       revalidatePath(postsPath);
       revalidatePath(singlePostPath(postId));
-    } catch (error: any) {
-      throw new Error("Failed to vote!");
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : "Failed to vote!");
     }
   });

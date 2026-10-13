@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import Stripe from "stripe";
 
 function isPremiumActive(status: Stripe.Subscription.Status) {
@@ -59,10 +59,10 @@ const syncInvoice = async (invoice: Stripe.Invoice) => {
 
 export async function POST(req: Request) {
   const signature = req.headers.get("stripe-signature");
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
-    return new Response("Missing stripe webhook config", { status: 400 });
+    return new Response("Stripe webhook is not configured", { status: 503 });
   }
 
   const payload = await req.text();
@@ -70,9 +70,8 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-  } catch (error) {
-    console.error(error);
+    event = getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
+  } catch {
     return new Response("Invalid signature", { status: 400 });
   }
 
@@ -93,7 +92,7 @@ export async function POST(req: Request) {
 
     return new Response("ok", { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Stripe webhook processing failed", error);
     return new Response("Webhook failed", { status: 500 });
   }
 }

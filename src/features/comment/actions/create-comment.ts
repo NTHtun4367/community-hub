@@ -15,6 +15,16 @@ export const createComment = actionClient
     if (!session) throw new Error("Unauthorized! You need to sign in!");
 
     try {
+      if (parentId) {
+        const parentComment = await prisma.comment.findUnique({
+          where: { id: parentId },
+          select: { postId: true },
+        });
+        if (!parentComment || parentComment.postId !== postId) {
+          throw new Error("Reply target does not belong to this post.");
+        }
+      }
+
       const newComment = await prisma.comment.create({
         data: {
           content,
@@ -34,7 +44,13 @@ export const createComment = actionClient
       });
 
       revalidatePath(singlePostPath(postId));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        error.message === "Reply target does not belong to this post."
+      ) {
+        throw error;
+      }
       throw new Error("Failed to post comment");
     }
   });

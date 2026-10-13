@@ -40,7 +40,7 @@ function DeleteButton({ id }: DeleteButtonProps) {
     if (hasSucceeded) {
       router.push(postsPath);
     }
-  }, [hasSucceeded]);
+  }, [hasSucceeded, router]);
 
   return (
     <AlertDialog>

@@ -1,7 +1,11 @@
 import ResetPasswordEmailTemplate from "@/features/auth/components/reset-password-email-template";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is required to send email.");
+  return new Resend(apiKey);
+};
 
 interface Options {
   to: string;
@@ -15,8 +19,8 @@ export const sendEmail = async ({
   resetPasswordLink,
 }: Options) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: "CM-HUB <onboarding@resend.dev>",
+    const { error } = await getResend().emails.send({
+      from: process.env.EMAIL_FROM ?? "Dev Forum <onboarding@resend.dev>",
       to,
       subject,
       react: ResetPasswordEmailTemplate({ resetPasswordLink }),
@@ -25,7 +29,7 @@ export const sendEmail = async ({
     if (error) {
       throw new Error(error.message);
     }
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Failed to send email.");
   }
 };

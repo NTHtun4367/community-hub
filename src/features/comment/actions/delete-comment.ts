@@ -29,7 +29,7 @@ export const deleteComment = actionClient
 
       revalidatePath(singlePostPath(comment.postId));
       return { success: true };
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to delete comment.");
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : "Failed to delete comment.");
     }
   });

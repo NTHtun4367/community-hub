@@ -14,7 +14,7 @@ import {
   changePasswordSchemaType,
 } from "../schemas/auth.change-password";
 import { notFound, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AuthDialog } from "@/components/auth-dialog";
 import SignInForm from "./signin-form";
 
@@ -29,7 +29,7 @@ function ChangePasswordForm() {
     notFound();
   }
 
-  const { execute, isPending, hasSucceeded } = useAction(changePassword, {
+  const { execute, isPending } = useAction(changePassword, {
     onSuccess: () => {
       toast.success("Your password has changed successfully!");
       setIsChanged(true);
@@ -51,12 +51,6 @@ function ChangePasswordForm() {
   function onSubmit(data: changePasswordSchemaType) {
     execute(data);
   }
-
-  useEffect(() => {
-    if (hasSucceeded) {
-      setIsSignInOpen(true);
-    }
-  }, [hasSucceeded]);
 
   return (
     <>
@@ -95,7 +89,7 @@ function ChangePasswordForm() {
         ) : (
           <div className="py-4 text-center">
             <p className="text-sm text-muted-foreground mb-4">
-              Click the button below if the login window doesn't appear.
+              Click the button below if the login window doesn&apos;t appear.
             </p>
             <AuthDialog
               open={isSignInOpen}

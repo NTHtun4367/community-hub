@@ -18,13 +18,13 @@ export const deleteNotification = actionClient
     }
 
     try {
-      await prisma.notification.delete({
-        where: { id },
+      await prisma.notification.deleteMany({
+        where: { id, recipientId: session.user.id },
       });
       revalidatePath(notificationPath);
-    } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+      revalidatePath("/");
+    } catch {
+      throw new Error("Unable to delete this notification.");
     }
   });
 
@@ -41,8 +41,8 @@ export const deleteAllNotifications = actionClient.action(async () => {
       where: { recipientId: session.user.id },
     });
     revalidatePath(notificationPath);
-  } catch (error: any) {
-    const errorMessage = error?.body?.message || "Something went wrong!";
-    throw new Error(errorMessage);
+    revalidatePath("/");
+  } catch {
+    throw new Error("Unable to clear notifications.");
   }
 });

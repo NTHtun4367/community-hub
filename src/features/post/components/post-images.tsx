@@ -9,32 +9,31 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import Image from "next/image";
 
 interface PostImagesProps {
   images: string[];
 }
 
-function PostImages({ images }: PostImagesProps) {
-  if (!images || images.length === 0) return null;
-
-  const ImageWrapper = ({
-    src,
-    alt,
-    className,
-  }: {
-    src: string;
-    alt: string;
-    className?: string;
-  }) => (
+function ImageWrapper({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
+  return (
     <Dialog>
       <DialogTrigger asChild>
         <div
           className={cn(
-            "cursor-pointer overflow-hidden hover:opacity-90 transition-opacity w-full h-full",
+            "relative cursor-pointer overflow-hidden hover:opacity-90 transition-opacity w-full h-full",
             className,
           )}
         >
-          <img src={src} alt={alt} className="w-full h-full object-cover" />
+          <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" unoptimized />
         </div>
       </DialogTrigger>
 
@@ -45,25 +44,31 @@ function PostImages({ images }: PostImagesProps) {
           </VisuallyHidden.Root>
         </DialogHeader>
 
-        <div className="relative w-full h-full flex items-center justify-center p-4">
-          <img
+        <div className="relative min-h-0 min-w-0 h-[min(80vh,900px)] w-[min(92vw,1200px)]">
+          <Image
             src={src}
             alt={alt}
-            className="max-w-full max-h-full object-contain select-none"
+            fill
+            sizes="100vw"
+            unoptimized
+            className="object-contain select-none"
           />
         </div>
       </DialogContent>
     </Dialog>
   );
+}
+
+function PostImages({ images }: PostImagesProps) {
+  if (!images || images.length === 0) return null;
 
   return (
     <div className="rounded-xl overflow-hidden border border-border/50 bg-muted/20 mt-3">
       {images.length === 1 && (
-        <div className="w-full overflow-hidden">
+        <div className="relative aspect-video w-full overflow-hidden">
           <ImageWrapper
             src={images[0]}
             alt="post image"
-            className="aspect-auto max-h-125"
           />
         </div>
       )}

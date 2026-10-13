@@ -6,6 +6,7 @@ import { postsPath } from "@/path";
 import { revalidatePath } from "next/cache";
 import { postUpdateSchema } from "../schemas";
 import { getSession } from "@/lib/get-session";
+import { singlePostPath } from "@/path";
 
 export const updatePost = actionClient
   .inputSchema(postUpdateSchema)
@@ -32,9 +33,9 @@ export const updatePost = actionClient
         });
 
         revalidatePath(postsPath);
-      } catch (error: any) {
-        const errorMessage = error?.body?.message || "Something went wrong!";
-        throw new Error(errorMessage);
+        revalidatePath(singlePostPath(id));
+      } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : "Something went wrong!");
       }
     },
   );

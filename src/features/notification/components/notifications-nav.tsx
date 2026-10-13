@@ -64,8 +64,10 @@ export function NotificationsNav({ notifications }: Props) {
                 className="p-0 focus:bg-transparent"
               >
                 <Link
-                  href={`/posts/${n.postId}`}
-                  onClick={() => markAsRead({ id: n.id })}
+                  href={n.postId ? `/posts/${n.postId}` : notificationPath}
+                  onClick={() => {
+                    void markAsRead({ id: n.id }).catch(() => undefined);
+                  }}
                   className={cn(
                     "flex flex-col items-start p-4 gap-1 border-b last:border-0 hover:bg-muted/50 transition-colors",
                     !n.isRead && "bg-blue-50/40 dark:bg-blue-900/10",

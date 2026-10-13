@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
 import { getSession } from "@/lib/get-session";
+import { notificationPath, profilePath } from "@/path";
 import { revalidatePath } from "next/cache";
 import { notiSchema } from "../schemas/noti";
 
@@ -34,9 +35,8 @@ export const pushNotification = async ({
         message,
       },
     });
-  } catch (error: any) {
-    const errorMessage = error?.body?.message || "Something went wrong!";
-    throw new Error(errorMessage);
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Something went wrong!");
   }
 };
 
@@ -51,14 +51,14 @@ export const markAsRead = actionClient
     }
 
     try {
-      await prisma.notification.update({
-        where: { id },
+      await prisma.notification.updateMany({
+        where: { id, recipientId: session.user.id },
         data: { isRead: true },
       });
       revalidatePath("/");
-    } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+      revalidatePath(notificationPath);
+    } catch {
+      throw new Error("Unable to update this notification.");
     }
   });
 
@@ -76,8 +76,9 @@ export const markAllAsRead = actionClient.action(async () => {
       data: { isRead: true },
     });
     revalidatePath("/");
-  } catch (error: any) {
-    const errorMessage = error?.body?.message || "Something went wrong!";
-    throw new Error(errorMessage);
+    revalidatePath(notificationPath);
+    revalidatePath(profilePath);
+  } catch {
+    throw new Error("Unable to update notifications.");
   }
 });

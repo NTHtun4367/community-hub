@@ -19,9 +19,11 @@ async function EditPostPage({ params }: EditPostPageProps) {
   }
 
   const post = await getPost(id);
-  const owner = await isOwner(post?.userId!);
-
-  if (!post || !owner) {
+  if (!post) {
+    notFound();
+  }
+  const owner = await isOwner(post.userId);
+  if (!owner) {
     notFound();
   }
 

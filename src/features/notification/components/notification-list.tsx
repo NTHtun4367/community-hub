@@ -20,22 +20,34 @@ export default function NotificationList({ initialNotifications }: Props) {
   const [notifications, setNotifications] = useState(initialNotifications);
 
   const handleRead = async (id: string) => {
-    await markAsRead({ id });
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
-    );
+    try {
+      await markAsRead({ id });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+      );
+    } catch {
+      // Keep the item unread when the update fails.
+    }
   };
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    await deleteNotification({ id });
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await deleteNotification({ id });
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch {
+      // Keep the item visible when the delete fails.
+    }
   };
 
   const handleDeleteAll = async () => {
-    await deleteAllNotifications();
-    setNotifications([]);
+    try {
+      await deleteAllNotifications();
+      setNotifications([]);
+    } catch {
+      // Keep the notifications visible when the delete fails.
+    }
   };
 
   if (notifications.length === 0) {
@@ -56,7 +68,7 @@ export default function NotificationList({ initialNotifications }: Props) {
         {notifications.map((n) => (
           <div key={n.id} className="relative group">
             <Link
-              href={`/posts/${n.postId}`}
+              href={n.postId ? `/posts/${n.postId}` : "/notifications"}
               onClick={() => handleRead(n.id)}
               className={cn(
                 "flex items-start gap-4 p-4 rounded-xl border transition-all hover:shadow-sm",

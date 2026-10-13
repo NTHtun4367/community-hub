@@ -15,8 +15,12 @@ import SignInForm from "@/features/auth/components/signin-form";
 import SignUpForm from "@/features/auth/components/signup-form";
 import { Notification } from "@/generated/prisma/client";
 
+interface HeaderSession {
+  user: { id: string; name: string; email: string };
+}
+
 interface Props {
-  session: any;
+  session: HeaderSession | null;
   notifications?: Notification[];
 }
 

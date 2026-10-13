@@ -14,8 +14,7 @@ export const changePassword = actionClient
           token,
         },
       });
-    } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : "Something went wrong!");
     }
   });

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { postsPath } from "@/path";
+import { postsPath, singlePostPath } from "@/path";
 import { revalidatePath } from "next/cache";
 import { postDeleteSchema } from "../schemas";
 import { getSession } from "@/lib/get-session";
@@ -20,8 +20,8 @@ export const deletePost = actionClient
       await prisma.post.delete({ where: { id, userId: session.user.id } });
 
       revalidatePath(postsPath);
-    } catch (error: any) {
-      const errorMessage = error?.body?.message || "Something went wrong!";
-      throw new Error(errorMessage);
+      revalidatePath(singlePostPath(id));
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : "Something went wrong!");
     }
   });
