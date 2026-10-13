@@ -26,6 +26,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/coda-logo.svg",
+    shortcut: "/coda-logo.svg",
+    apple: "/coda-logo.svg",
+  },
   title: {
     default: "CODA | Developer Community",
     template: "%s | CODA",

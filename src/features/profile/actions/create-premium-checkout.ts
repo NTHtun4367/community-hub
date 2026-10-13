@@ -18,7 +18,7 @@ export const createPremiumCheckout = actionClient
       throw new Error("Unauthorized! You need to sign in!");
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const siteUrl = process.env.NEXT_APP_URL;
     const priceId = process.env.STRIPE_PREMIUM_PRICE_ID;
 
     if (!siteUrl || !priceId) {
